@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Invitation Kanto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Serif+JP:wght@400;700;900&family=Permanent+Marker&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink-black: #0f0f0f;
+            --paper-white: #f4f4f0;
+            --manga-red: #e60033;
+        }
+
+        body {
+            background-color: #333;
+            font-family: 'Noto Serif JP', serif;
+            color: var(--ink-black);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overscroll-behavior: none;
+        }
+
+        /* --- CONTENEUR PAGE --- */
+        #manga-page {
+            width: 100%;
+            height: 100%;
+            max-width: 480px;
+            background-color: var(--paper-white);
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .halftone-bg {
+            background-image: radial-gradient(var(--ink-black) 1px, transparent 1px);
+            background-size: 8px 8px;
+            opacity: 0.08;
+            position: absolute; inset: 0; pointer-events: none; z-index: 0;
+        }
+
+        .manga-panel {
+            background: white;
+            border: 3px solid var(--ink-black);
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
+            position: relative;
+            z-index: 10;
+        }
+
+        .sfx-text { font-family: 'Bangers', cursive; letter-spacing: 1px; }
+
+        .bubble {
+            background: white;
+            border: 2px solid var(--ink-black);
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+        }
+        .bubble::after { content: ''; position: absolute; left: 50%; bottom: -12px; transform: translateX(-50%); border-width: 12px 12px 0; border-style: solid; border-color: var(--ink-black) transparent; }
+        .bubble::before { content: ''; position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%); border-width: 9px 9px 0; border-style: solid; border-color: white transparent; z-index: 1; }
+
+        /* --- ECHIQUIER & PIÈCES --- */
+        .chess-container {
+            width: 100%; max-width: 340px; aspect-ratio: 1 / 1;
+            margin: 0 auto;
+            border: 3px solid var(--ink-black);
+            background: white;
+            position: relative;
+        }
+        .chess-grid { display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); width: 100%; height: 100%; }
+        .square { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; }
+        .square.black { background-color: var(--ink-black); background-image: repeating-linear-gradient(45deg, #222 0, #222 1px, transparent 0, transparent 4px); }
+
+        .piece-svg { width: 85%; height: 85%; z-index: 2; position: relative; transition: transform 0.2s; }
+        
+        .valid-target::after {
+            content: ''; position: absolute; width: 70%; height: 70%; top: 15%; left: 15%;
+            border: 3px dashed var(--manga-red); border-radius: 50%;
+            animation: spin 6s linear infinite; z-index: 1; pointer-events: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- BOUTONS --- */
+        .manga-btn {
+            font-family: 'Bangers', cursive; text-transform: uppercase; letter-spacing: 1px;
+            border: 3px solid var(--ink-black); cursor: pointer;
+            touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- EFFET GLITCH (BUG) --- */
+        .glitch-text {
+            display: inline-block;
+            font-weight: 900;
+            background: black;
+            color: lime; /* Couleur hacker/bug */
+            padding: 0 4px;
+            animation: glitch-anim 0.2s infinite;
+            font-family: monospace;
+        }
+        @keyframes glitch-anim {
+            0% { transform: translate(0,0) skew(0deg); }
+            20% { transform: translate(-2px, 1px) skew(10deg); background: #e60033; color: white; }
+            40% { transform: translate(2px, -1px) skew(-5deg); }
+            60% { transform: translate(-1px, 2px) skew(0deg); background: black; color: lime;}
+            80% { transform: translate(1px, -2px) skew(5deg); }
+            100% { transform: translate(0,0) skew(0deg); }
+        }
+
+        /* --- FX --- */
+        .shake { animation: shake 0.4s both; }
+        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
+        .impact-flash { animation: invertFlash 0.2s; }
+        @keyframes invertFlash { 0%, 100% { filter: invert(0); } 50% { filter: invert(1); } }
+        .sfx-overlay {
+            position: absolute; font-family: 'Bangers', cursive; font-size: 5rem;
+            color: var(--ink-black); text-shadow: 3px 3px 0 white;
+            pointer-events: none; z-index: 50; transform: rotate(-15deg) scale(0);
+        }
+        
+        .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div id="manga-page">
+        <div class="halftone-bg"></div>
+        
+        <!-- INTRO -->
+        <section id="p-intro" class="h-full flex flex-col items-center justify-center p-6 relative z-10">
+            <div class="manga-panel p-6 w-full text-center transform rotate-1 mb-10 bg-white">
+                <div class="absolute -top-3 -left-3 bg-red-600 text-white px-3 py-1 font-bold text-xs border-2 border-black transform -rotate-3">EPISODE 1</div>
+                <h1 class="text-5xl sfx-text mb-2 leading-none mt-4">BONJOUR<br>KANTO</h1>
+                <p class="font-serif italic text-sm text-gray-700 mb-2">"t’es prête ? 🙃"</p>
+            </div>
+            <button onclick="startPhase2()" class="manga-btn bg-black text-white px-8 py-3 text-xl shadow-[5px_5px_0_var(--manga-red)] active:scale-95 transition-all">START GAME ></button>
+        </section>
+
+        <!-- JEU -->
+        <section id="p-game" class="hidden h-full flex flex-col items-center justify-center p-4 relative z-10">
+            <div class="w-full flex justify-between items-end mb-2 px-2 border-b-2 border-black pb-2">
+                <h2 class="text-xl font-black italic">VS BATTLE</h2>
+                <div class="text-xs font-bold bg-black text-white px-2 py-0.5">TOUR: KANTO</div>
+            </div>
+            <div class="bubble mb-4 w-full max-w-[300px] animate-pulse">
+                <p class="font-bold text-sm">"Ma Reine est prête.<br>Capture le Cavalier !"</p>
+            </div>
+            <div class="chess-container">
+                <div id="board" class="chess-grid"></div>
+                <div id="sfx-layer" class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-visible"></div>
+            </div>
+            <p id="game-msg" class="mt-6 font-serif italic text-xs text-center text-gray-500">(Clique sur la pièce Blanche)</p>
+        </section>
+
+        <!-- PROPOSITION -->
+        <section id="p-proposal" class="hidden h-full flex flex-col items-center justify-center p-4 relative z-20 overflow-y-auto">
+            <div id="proposal-panel" class="manga-panel w-full p-6 flex flex-col items-center text-center bg-white border-4 border-black relative h-auto min-h-[420px] transition-all duration-500">
+                
+                <div class="absolute top-2 left-2 text-red-500 font-black opacity-20 text-4xl rotate-12 sfx-text">DOKI</div>
+                <div class="absolute bottom-2 right-2 text-red-500 font-black opacity-20 text-5xl -rotate-12 sfx-text">DOKI</div>
+
+                <!-- ICONE / GIF -->
+                <div id="main-icon" class="mb-3 animate-bounce flex justify-center items-center h-24">
+                    <span class="text-5xl">👑</span>
+                </div>
+                
+                <h2 id="main-title" class="text-2xl font-black mb-2 uppercase tracking-tight">Échec et Mat.</h2>
+                <p id="main-text" class="mb-5 font-serif text-sm text-gray-800 leading-relaxed font-semibold">"Tu m'as bien eu... Le perdant doit payer sa dette."</p>
+                <div class="w-full border-t-2 border-dashed border-gray-400 my-3"></div>
+                
+                <!-- BUBBLE ZONE -->
+                <div id="bubble-container" class="bubble w-full mb-8 transform -rotate-1 border-red-500 border-2 shadow-md bg-yellow-50 transition-all">
+                    <div id="bubble-content">
+                        <h3 class="text-xl font-black text-red-600 sfx-text leading-tight pt-2">UN DATE,<br>SAMEDI MATIN ?</h3>
+                    </div>
+                </div>
+
+                <!-- DETAILS LIST (Invisible au départ) -->
+                <div id="mission-details" class="hidden w-full text-left mt-2 border-t-2 border-black pt-2 bg-gray-50 p-3 rounded shadow-inner">
+                    <p class="font-black text-xs uppercase tracking-widest mb-2 text-gray-500">🔻 Détails de la mission :</p>
+                    <ul class="text-sm font-serif space-y-2 leading-tight">
+                        <li>📍 <strong>Lieu :</strong> Arboretum</li>
+                        <li>🍫 Gâteau au chocolat & Chocolat chaud</li>
+                        <li>🍤 Pizza ou Plat aux crevettes</li>
+                        <li class="pt-1">
+                            🔒 <span class="glitch-text text-sm">???????????????</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ZONE D'ACTION -->
+                <div id="action-area" class="w-full h-32 mt-auto relative">
+                     <button id="btn-yes" class="absolute left-1/2 bottom-8 transform -translate-x-1/2 manga-btn bg-red-600 text-white border-2 border-black text-lg px-6 py-2 shadow-[4px_4px_0_rgba(0,0,0,1)] z-20">OUI !</button>
+                    <button id="btn-no" class="absolute left-1/2 bottom-20 transform -translate-x-1/2 manga-btn bg-white text-black border-2 border-black text-xs px-3 py-2 shadow-[2px_2px_0_#999] whitespace-nowrap z-30 transition-all duration-200">Pas dispo...</button>
+                </div>
+            </div>
+        </section>
+        <canvas id="petal-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+    </div>
+
+    <script>
+        const phases = { intro: document.getElementById('p-intro'), game: document.getElementById('p-game'), proposal: document.getElementById('p-proposal') };
+        const state = { queen: {r: 5, c: 2}, knight: {r: 2, c: 5}, selected: false, locked: false };
+
+        window.startPhase2 = () => { phases.intro.style.display = 'none'; phases.game.classList.remove('hidden'); renderBoard(); };
+
+        function renderBoard() {
+            const board = document.getElementById('board'); board.innerHTML = '';
+            for(let r=0; r<8; r++){
+                for(let c=0; c<8; c++){
+                    const cell = document.createElement('div'); cell.className = `square ${(r+c)%2===1 ? 'black' : 'white'}`;
+                    if(r === state.queen.r && c === state.queen.c) {
+                        cell.innerHTML = getPieceSVG('queen'); cell.style.cursor = 'pointer'; cell.onclick = () => selectQueen(cell);
+                    } else if (r === state.knight.r && c === state.knight.c) {
+                        cell.innerHTML = getPieceSVG('knight'); cell.id = 'target-knight';
+                    }
+                    board.appendChild(cell);
+                }
+            }
+        }
+
+        function getPieceSVG(type) {
+            if(type === 'queen') return `<svg class="piece-svg" viewBox="0 0 45 45"><g fill="#fff" stroke="#000" stroke-width="1.5"><path d="M8 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM24.5 7.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM41 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM10.5 19.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM38.5 19.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/><path d="M9 26c8.5-1.5 21-1.5 27 0l2-12-7 11V11l-5.5 13.5-3-15-3 15-5.5-13.5V25l-7-11zM9 26c0 2 1.5 2 2.5 4 1 2.5 3 3.5 11 3.5s10-1 11-3.5c1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z"/><path d="M11.5 30c3.5-1 18.5-1 22 0M12 33.5c6-1 15-1 21 0"/></g></svg>`;
+            return `<svg class="piece-svg" viewBox="0 0 45 45"><g fill="#0f0f0f" stroke="#fff" stroke-width="1.5"><path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" /><path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,25.06 10,25 C 9,25 5.997,22.4 6,24 C 5.041,24.67 4.625,21.56 5,20 C 4.663,18.77 8.131,15.97 10,17 C 10,15.66 11.9,9.273 22,10 z" /><path d="M 9.5 25.5 A 0.5 0.5 0 1 1 8.5 25.5 A 0.5 0.5 0 1 1 9.5 25.5 z" stroke="none" fill="#fff"/><path d="M 15 15.5 A 0.5 1.5 0 1 1 14 15.5 A 0.5 1.5 0 1 1 15 15.5 z" transform="matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)" stroke="none" fill="#fff"/></g></svg>`;
+        }
+
+        function selectQueen(cell) {
+            if(state.locked) return; state.selected = true;
+            document.getElementById('game-msg').innerText = "CIBLE VERROUILLÉE ! APPUIE SUR LE CAVALIER !"; document.getElementById('game-msg').style.color = "#e60033"; document.getElementById('game-msg').style.fontWeight = "bold";
+            const k = document.getElementById('target-knight'); k.classList.add('valid-target'); k.onclick = handleCapture;
+        }
+
+        function handleCapture() {
+            state.locked = true; document.getElementById('manga-page').classList.add('shake'); document.body.classList.add('impact-flash');
+            const sfx = document.createElement('div'); sfx.innerText = "BAM!!"; sfx.className = "sfx-overlay"; sfx.style.animation = "sfxPop 0.4s forwards";
+            const style = document.createElement('style'); style.innerHTML = `@keyframes sfxPop { 0% { transform: scale(0) rotate(-15deg); opacity: 0; } 70% { transform: scale(1.2) rotate(-15deg); opacity: 1; } 100% { transform: scale(1) rotate(-15deg); opacity: 1; } }`; document.head.appendChild(style); document.getElementById('sfx-layer').appendChild(sfx);
+            setTimeout(() => { phases.game.style.display = 'none'; phases.proposal.classList.remove('hidden'); startPetals(); initFleeingButton(); }, 1200);
+        }
+
+        function initFleeingButton() {
+            const btnNo = document.getElementById('btn-no');
+            const btnYes = document.getElementById('btn-yes');
+            const area = document.getElementById('proposal-panel');
+            const phrases = ["Trop tôt ?", "Attends !", "Pas touche !", "Raté !", "Allez...", "Nope !", "Essaie encore"];
+
+            const runAway = (e) => {
+                e.preventDefault(); e.stopPropagation();
+
+                const padding = 20;
+                const maxX = area.clientWidth - btnNo.offsetWidth - padding;
+                const maxY = area.clientHeight - btnNo.offsetHeight - padding;
+                const newX = Math.max(padding, Math.random() * maxX);
+                const newY = Math.max(padding, Math.random() * maxY);
+
+                btnNo.style.position = 'absolute';
+                btnNo.style.left = newX + 'px';
+                btnNo.style.top = newY + 'px';
+                btnNo.style.bottom = 'auto'; 
+                btnNo.style.transform = `rotate(${Math.random() * 20 - 10}deg)`; 
+                btnNo.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+                btnNo.style.color = '#e60033';
+                btnNo.style.borderColor = '#e60033';
+            };
+
+            btnNo.addEventListener('touchstart', runAway, { passive: false });
+            btnNo.addEventListener('mouseover', runAway);
+            btnNo.addEventListener('click', runAway);
+
+            btnYes.addEventListener('click', () => {
+                document.getElementById('main-title').innerText = "DATE VALIDÉ !"; 
+                document.getElementById('main-title').classList.add('text-red-600');
+                document.getElementById('main-text').innerText = "Prépare-toi bien...";
+                document.getElementById('bubble-content').innerHTML = `<h3 class="text-lg font-black text-black">À SAMEDI !! ❤️</h3>`;
+                
+                // MASHLE GIF
+                const iconZone = document.getElementById('main-icon');
+                iconZone.innerHTML = `<img src="https://media.tenor.com/FBQsQ9UNzXcAAAAM/mashle-magic-and-muscles-mash-dance-mashle-magic-and-muscles.gif" alt="Mashle Dance" class="w-24 h-24 object-cover border-2 border-black rounded-lg shadow-md">`;
+                
+                // Cacher les boutons
+                document.getElementById('action-area').style.display = 'none';
+
+                // Afficher la liste secrète
+                const details = document.getElementById('mission-details');
+                details.classList.remove('hidden');
+                details.classList.add('fade-in-up');
+
+                for(let i=0; i<50; i++) petals.push(createPetal());
+            });
+        }
+
+        const canvas = document.getElementById('petal-canvas'); const ctx = canvas.getContext('2d'); let petals = [];
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; } window.addEventListener('resize', resizeCanvas); resizeCanvas();
+        function createPetal() { return { x: Math.random() * canvas.width, y: -10, size: Math.random() * 8 + 4, speedY: Math.random() * 3 + 1, speedX: Math.random() * 2 - 1, rotation: Math.random() * 360, rotationSpeed: Math.random() * 4 - 2 }; }
+        function startPetals() { for(let i=0; i<30; i++) petals.push(createPetal()); animatePetals(); }
+        function animatePetals() { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = '#ffb7b2'; petals.forEach((p, i) => { p.y += p.speedY; p.x += p.speedX; p.rotation += p.rotationSpeed; if (p.y > canvas.height) petals[i] = createPetal(); ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rotation * Math.PI / 180); ctx.beginPath(); ctx.ellipse(0, 0, p.size, p.size/2, 0, 0, Math.PI*2); ctx.fill(); ctx.restore(); }); requestAnimationFrame(animatePetals); }
+    </script>
+</body>
+</html>
+
+

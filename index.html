@@ -2,306 +2,639 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Invitation Kanto</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pour Kanto ❤️</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Serif+JP:wght@400;700;900&family=Permanent+Marker&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     <style>
+        /* --- DESIGN SYSTEM CUTE (KAWAII) --- */
         :root {
-            --ink-black: #0f0f0f;
-            --paper-white: #f4f4f0;
-            --manga-red: #e60033;
+            --bg-gradient: linear-gradient(135deg, #fff0f5 0%, #e6e6fa 100%);
+            --text-main: #5d4037;
+            --accent: #ff69b4;
+            --secondary: #9370db;
+            --chess-white: #ffffff;
+            --chess-black: #ffb7b2;
+            --glass: rgba(255, 255, 255, 0.7);
         }
 
         body {
-            background-color: #333;
-            font-family: 'Noto Serif JP', serif;
-            color: var(--ink-black);
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            font-family: 'Quicksand', sans-serif;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
-            margin: 0;
             display: flex;
-            justify-content: center;
             align-items: center;
-            overscroll-behavior: none;
+            justify-content: center;
         }
 
-        /* --- CONTENEUR PAGE --- */
-        #manga-page {
+        h1, h2 {
+            font-family: 'Fredoka', sans-serif;
+            color: var(--accent);
+            text-shadow: 2px 2px 0px #fff;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            max-width: 480px;
-            background-color: var(--paper-white);
-            position: relative;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
-            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- INTRO LETTER SCENE --- */
+        #intro-scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-gradient);
+            transition: opacity 0.8s ease-in-out;
         }
 
-        .halftone-bg {
-            background-image: radial-gradient(var(--ink-black) 1px, transparent 1px);
-            background-size: 8px 8px;
-            opacity: 0.08;
-            position: absolute; inset: 0; pointer-events: none; z-index: 0;
+        .intro-wrapper {
+            opacity: 0;
+            transform: scale(0.8) translateY(50px);
+            animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation-delay: 0.1s;
         }
 
-        .manga-panel {
-            background: white;
-            border: 3px solid var(--ink-black);
-            box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
-            position: relative;
-            z-index: 10;
-        }
-
-        .sfx-text { font-family: 'Bangers', cursive; letter-spacing: 1px; }
-
-        .bubble {
-            background: white;
-            border: 2px solid var(--ink-black);
-            border-radius: 20px;
-            padding: 15px;
-            text-align: center;
-            position: relative;
-            box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
-        }
-        .bubble::after { content: ''; position: absolute; left: 50%; bottom: -12px; transform: translateX(-50%); border-width: 12px 12px 0; border-style: solid; border-color: var(--ink-black) transparent; }
-        .bubble::before { content: ''; position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%); border-width: 9px 9px 0; border-style: solid; border-color: white transparent; z-index: 1; }
-
-        /* --- ECHIQUIER & PIÈCES --- */
-        .chess-container {
-            width: 100%; max-width: 340px; aspect-ratio: 1 / 1;
-            margin: 0 auto;
-            border: 3px solid var(--ink-black);
-            background: white;
-            position: relative;
-        }
-        .chess-grid { display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr); width: 100%; height: 100%; }
-        .square { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; }
-        .square.black { background-color: var(--ink-black); background-image: repeating-linear-gradient(45deg, #222 0, #222 1px, transparent 0, transparent 4px); }
-
-        .piece-svg { width: 85%; height: 85%; z-index: 2; position: relative; transition: transform 0.2s; }
-        
-        .valid-target::after {
-            content: ''; position: absolute; width: 70%; height: 70%; top: 15%; left: 15%;
-            border: 3px dashed var(--manga-red); border-radius: 50%;
-            animation: spin 6s linear infinite; z-index: 1; pointer-events: none;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* --- BOUTONS --- */
-        .manga-btn {
-            font-family: 'Bangers', cursive; text-transform: uppercase; letter-spacing: 1px;
-            border: 3px solid var(--ink-black); cursor: pointer;
-            touch-action: manipulation; user-select: none; -webkit-tap-highlight-color: transparent;
-        }
-
-        /* --- EFFET GLITCH (BUG) --- */
-        .glitch-text {
-            display: inline-block;
-            font-weight: 900;
-            background: black;
-            color: lime; /* Couleur hacker/bug */
-            padding: 0 4px;
-            animation: glitch-anim 0.2s infinite;
-            font-family: monospace;
-        }
-        @keyframes glitch-anim {
-            0% { transform: translate(0,0) skew(0deg); }
-            20% { transform: translate(-2px, 1px) skew(10deg); background: #e60033; color: white; }
-            40% { transform: translate(2px, -1px) skew(-5deg); }
-            60% { transform: translate(-1px, 2px) skew(0deg); background: black; color: lime;}
-            80% { transform: translate(1px, -2px) skew(5deg); }
-            100% { transform: translate(0,0) skew(0deg); }
-        }
-
-        /* --- FX --- */
-        .shake { animation: shake 0.4s both; }
-        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
-        .impact-flash { animation: invertFlash 0.2s; }
-        @keyframes invertFlash { 0%, 100% { filter: invert(0); } 50% { filter: invert(1); } }
-        .sfx-overlay {
-            position: absolute; font-family: 'Bangers', cursive; font-size: 5rem;
-            color: var(--ink-black); text-shadow: 3px 3px 0 white;
-            pointer-events: none; z-index: 50; transform: rotate(-15deg) scale(0);
-        }
-        
-        .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; opacity: 0; transform: translateY(20px); }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-    </style>
-</head>
-<body>
-    <div id="manga-page">
-        <div class="halftone-bg"></div>
-        
-        <!-- INTRO -->
-        <section id="p-intro" class="h-full flex flex-col items-center justify-center p-6 relative z-10">
-            <div class="manga-panel p-6 w-full text-center transform rotate-1 mb-10 bg-white">
-                <div class="absolute -top-3 -left-3 bg-red-600 text-white px-3 py-1 font-bold text-xs border-2 border-black transform -rotate-3">EPISODE 1</div>
-                <h1 class="text-5xl sfx-text mb-2 leading-none mt-4">BONJOUR<br>KANTO</h1>
-                <p class="font-serif italic text-sm text-gray-700 mb-2">"t’es prête ? 🙃"</p>
-            </div>
-            <button onclick="startPhase2()" class="manga-btn bg-black text-white px-8 py-3 text-xl shadow-[5px_5px_0_var(--manga-red)] active:scale-95 transition-all">START GAME ></button>
-        </section>
-
-        <!-- JEU -->
-        <section id="p-game" class="hidden h-full flex flex-col items-center justify-center p-4 relative z-10">
-            <div class="w-full flex justify-between items-end mb-2 px-2 border-b-2 border-black pb-2">
-                <h2 class="text-xl font-black italic">VS BATTLE</h2>
-                <div class="text-xs font-bold bg-black text-white px-2 py-0.5">TOUR: KANTO</div>
-            </div>
-            <div class="bubble mb-4 w-full max-w-[300px] animate-pulse">
-                <p class="font-bold text-sm">"Ma Reine est prête.<br>Capture le Cavalier !"</p>
-            </div>
-            <div class="chess-container">
-                <div id="board" class="chess-grid"></div>
-                <div id="sfx-layer" class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-visible"></div>
-            </div>
-            <p id="game-msg" class="mt-6 font-serif italic text-xs text-center text-gray-500">(Clique sur la pièce Blanche)</p>
-        </section>
-
-        <!-- PROPOSITION -->
-        <section id="p-proposal" class="hidden h-full flex flex-col items-center justify-center p-4 relative z-20 overflow-y-auto">
-            <div id="proposal-panel" class="manga-panel w-full p-6 flex flex-col items-center text-center bg-white border-4 border-black relative h-auto min-h-[420px] transition-all duration-500">
-                
-                <div class="absolute top-2 left-2 text-red-500 font-black opacity-20 text-4xl rotate-12 sfx-text">DOKI</div>
-                <div class="absolute bottom-2 right-2 text-red-500 font-black opacity-20 text-5xl -rotate-12 sfx-text">DOKI</div>
-
-                <!-- ICONE / GIF -->
-                <div id="main-icon" class="mb-3 animate-bounce flex justify-center items-center h-24">
-                    <span class="text-5xl">👑</span>
-                </div>
-                
-                <h2 id="main-title" class="text-2xl font-black mb-2 uppercase tracking-tight">Échec et Mat.</h2>
-                <p id="main-text" class="mb-5 font-serif text-sm text-gray-800 leading-relaxed font-semibold">"Tu m'as bien eu... Le perdant doit payer sa dette."</p>
-                <div class="w-full border-t-2 border-dashed border-gray-400 my-3"></div>
-                
-                <!-- BUBBLE ZONE -->
-                <div id="bubble-container" class="bubble w-full mb-8 transform -rotate-1 border-red-500 border-2 shadow-md bg-yellow-50 transition-all">
-                    <div id="bubble-content">
-                        <h3 class="text-xl font-black text-red-600 sfx-text leading-tight pt-2">UN DATE,<br>SAMEDI MATIN ?</h3>
-                    </div>
-                </div>
-
-                <!-- DETAILS LIST (Invisible au départ) -->
-                <div id="mission-details" class="hidden w-full text-left mt-2 border-t-2 border-black pt-2 bg-gray-50 p-3 rounded shadow-inner">
-                    <p class="font-black text-xs uppercase tracking-widest mb-2 text-gray-500">🔻 Détails de la mission :</p>
-                    <ul class="text-sm font-serif space-y-2 leading-tight">
-                        <li>📍 <strong>Lieu :</strong> Arboretum</li>
-                        <li>🍫 Gâteau au chocolat & Chocolat chaud</li>
-                        <li>🍤 Pizza ou Plat aux crevettes</li>
-                        <li class="pt-1">
-                            🔒 <span class="glitch-text text-sm">???????????????</span>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- ZONE D'ACTION -->
-                <div id="action-area" class="w-full h-32 mt-auto relative">
-                     <button id="btn-yes" class="absolute left-1/2 bottom-8 transform -translate-x-1/2 manga-btn bg-red-600 text-white border-2 border-black text-lg px-6 py-2 shadow-[4px_4px_0_rgba(0,0,0,1)] z-20">OUI !</button>
-                    <button id="btn-no" class="absolute left-1/2 bottom-20 transform -translate-x-1/2 manga-btn bg-white text-black border-2 border-black text-xs px-3 py-2 shadow-[2px_2px_0_#999] whitespace-nowrap z-30 transition-all duration-200">Pas dispo...</button>
-                </div>
-            </div>
-        </section>
-        <canvas id="petal-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
-    </div>
-
-    <script>
-        const phases = { intro: document.getElementById('p-intro'), game: document.getElementById('p-game'), proposal: document.getElementById('p-proposal') };
-        const state = { queen: {r: 5, c: 2}, knight: {r: 2, c: 5}, selected: false, locked: false };
-
-        window.startPhase2 = () => { phases.intro.style.display = 'none'; phases.game.classList.remove('hidden'); renderBoard(); };
-
-        function renderBoard() {
-            const board = document.getElementById('board'); board.innerHTML = '';
-            for(let r=0; r<8; r++){
-                for(let c=0; c<8; c++){
-                    const cell = document.createElement('div'); cell.className = `square ${(r+c)%2===1 ? 'black' : 'white'}`;
-                    if(r === state.queen.r && c === state.queen.c) {
-                        cell.innerHTML = getPieceSVG('queen'); cell.style.cursor = 'pointer'; cell.onclick = () => selectQueen(cell);
-                    } else if (r === state.knight.r && c === state.knight.c) {
-                        cell.innerHTML = getPieceSVG('knight'); cell.id = 'target-knight';
-                    }
-                    board.appendChild(cell);
-                }
+        @keyframes popIn {
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
             }
         }
 
-        function getPieceSVG(type) {
-            if(type === 'queen') return `<svg class="piece-svg" viewBox="0 0 45 45"><g fill="#fff" stroke="#000" stroke-width="1.5"><path d="M8 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM24.5 7.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM41 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM10.5 19.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM38.5 19.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/><path d="M9 26c8.5-1.5 21-1.5 27 0l2-12-7 11V11l-5.5 13.5-3-15-3 15-5.5-13.5V25l-7-11zM9 26c0 2 1.5 2 2.5 4 1 2.5 3 3.5 11 3.5s10-1 11-3.5c1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z"/><path d="M11.5 30c3.5-1 18.5-1 22 0M12 33.5c6-1 15-1 21 0"/></g></svg>`;
-            return `<svg class="piece-svg" viewBox="0 0 45 45"><g fill="#0f0f0f" stroke="#fff" stroke-width="1.5"><path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" /><path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,25.06 10,25 C 9,25 5.997,22.4 6,24 C 5.041,24.67 4.625,21.56 5,20 C 4.663,18.77 8.131,15.97 10,17 C 10,15.66 11.9,9.273 22,10 z" /><path d="M 9.5 25.5 A 0.5 0.5 0 1 1 8.5 25.5 A 0.5 0.5 0 1 1 9.5 25.5 z" stroke="none" fill="#fff"/><path d="M 15 15.5 A 0.5 1.5 0 1 1 14 15.5 A 0.5 1.5 0 1 1 15 15.5 z" transform="matrix(0.866,0.5,-0.5,0.866,9.693,-5.173)" stroke="none" fill="#fff"/></g></svg>`;
+        .envelope-container {
+            position: relative;
+            cursor: pointer;
+            animation: float 3s ease-in-out infinite;
         }
 
-        function selectQueen(cell) {
-            if(state.locked) return; state.selected = true;
-            document.getElementById('game-msg').innerText = "CIBLE VERROUILLÉE ! APPUIE SUR LE CAVALIER !"; document.getElementById('game-msg').style.color = "#e60033"; document.getElementById('game-msg').style.fontWeight = "bold";
-            const k = document.getElementById('target-knight'); k.classList.add('valid-target'); k.onclick = handleCapture;
+        .envelope {
+            width: 300px;
+            height: 200px;
+            background: #ff9ec6;
+            position: relative;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
 
-        function handleCapture() {
-            state.locked = true; document.getElementById('manga-page').classList.add('shake'); document.body.classList.add('impact-flash');
-            const sfx = document.createElement('div'); sfx.innerText = "BAM!!"; sfx.className = "sfx-overlay"; sfx.style.animation = "sfxPop 0.4s forwards";
-            const style = document.createElement('style'); style.innerHTML = `@keyframes sfxPop { 0% { transform: scale(0) rotate(-15deg); opacity: 0; } 70% { transform: scale(1.2) rotate(-15deg); opacity: 1; } 100% { transform: scale(1) rotate(-15deg); opacity: 1; } }`; document.head.appendChild(style); document.getElementById('sfx-layer').appendChild(sfx);
-            setTimeout(() => { phases.game.style.display = 'none'; phases.proposal.classList.remove('hidden'); startPetals(); initFleeingButton(); }, 1200);
+        .envelope-sides {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+        }
+        .envelope-sides::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-top: 100px solid transparent;
+            border-bottom: 100px solid transparent;
+            border-left: 150px solid #ffaddb;
+        }
+        .envelope-sides::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            border-top: 100px solid transparent;
+            border-bottom: 100px solid transparent;
+            border-right: 150px solid #ffaddb;
         }
 
-        function initFleeingButton() {
-            const btnNo = document.getElementById('btn-no');
-            const btnYes = document.getElementById('btn-yes');
-            const area = document.getElementById('proposal-panel');
-            const phrases = ["Trop tôt ?", "Attends !", "Pas touche !", "Raté !", "Allez...", "Nope !", "Essaie encore"];
+        .envelope::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-bottom: 100px solid #ffb7d6;
+            border-radius: 0 0 10px 10px;
+            z-index: 4;
+        }
 
-            const runAway = (e) => {
-                e.preventDefault(); e.stopPropagation();
+        .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 110px solid #ff8eb9;
+            transform-origin: top;
+            transition: transform 0.6s ease-in-out 0.2s, z-index 0.6s;
+            z-index: 5;
+        }
 
-                const padding = 20;
-                const maxX = area.clientWidth - btnNo.offsetWidth - padding;
-                const maxY = area.clientHeight - btnNo.offsetHeight - padding;
-                const newX = Math.max(padding, Math.random() * maxX);
-                const newY = Math.max(padding, Math.random() * maxY);
+        .wax-seal {
+            position: absolute;
+            top: -70px;
+            left: -20px;
+            font-size: 40px;
+            z-index: 6;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
 
-                btnNo.style.position = 'absolute';
-                btnNo.style.left = newX + 'px';
-                btnNo.style.top = newY + 'px';
-                btnNo.style.bottom = 'auto'; 
-                btnNo.style.transform = `rotate(${Math.random() * 20 - 10}deg)`; 
-                btnNo.innerText = phrases[Math.floor(Math.random() * phrases.length)];
-                btnNo.style.color = '#e60033';
-                btnNo.style.borderColor = '#e60033';
-            };
+        .letter {
+            position: absolute;
+            bottom: 0;
+            left: 25px;
+            width: 250px;
+            height: 180px;
+            background: #fff;
+            border-radius: 5px;
+            z-index: 2;
+            transition: transform 0.8s ease-in-out 0.6s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+        }
 
-            btnNo.addEventListener('touchstart', runAway, { passive: false });
-            btnNo.addEventListener('mouseover', runAway);
-            btnNo.addEventListener('click', runAway);
+        .envelope-container.open .flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
 
-            btnYes.addEventListener('click', () => {
-                document.getElementById('main-title').innerText = "DATE VALIDÉ !"; 
-                document.getElementById('main-title').classList.add('text-red-600');
-                document.getElementById('main-text').innerText = "Prépare-toi bien...";
-                document.getElementById('bubble-content').innerHTML = `<h3 class="text-lg font-black text-black">À SAMEDI !! ❤️</h3>`;
-                
-                // MASHLE GIF
-                const iconZone = document.getElementById('main-icon');
-                iconZone.innerHTML = `<img src="https://media.tenor.com/FBQsQ9UNzXcAAAAM/mashle-magic-and-muscles-mash-dance-mashle-magic-and-muscles.gif" alt="Mashle Dance" class="w-24 h-24 object-cover border-2 border-black rounded-lg shadow-md">`;
-                
-                // Cacher les boutons
-                document.getElementById('action-area').style.display = 'none';
+        .envelope-container.open .letter {
+            transform: translateY(-120px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .click-hint {
+            margin-top: 50px;
+            font-family: 'Fredoka', sans-serif;
+            color: var(--accent);
+            opacity: 0; 
+            font-size: 1.2rem;
+            animation: pulse 2s infinite, fadeInHint 1s ease-out 0.8s forwards;
+        }
+        
+        @keyframes fadeInHint {
+            to { opacity: 0.8; }
+        }
 
-                // Afficher la liste secrète
-                const details = document.getElementById('mission-details');
-                details.classList.remove('hidden');
-                details.classList.add('fade-in-up');
+        /* --- SLIDE STYLES --- */
+        .slide {
+            position: absolute;
+            width: 90%;
+            max-width: 550px;
+            background: var(--glass);
+            padding: 2rem;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(255, 105, 180, 0.15);
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            pointer-events: none;
+        }
 
-                for(let i=0; i<50; i++) petals.push(createPetal());
+        .slide.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: all;
+        }
+
+        .slide.exit {
+            opacity: 0;
+            transform: translateY(-50px) rotate(-5deg);
+            transition: all 0.5s ease-in;
+        }
+
+        /* --- CUTE CHESS BOARD --- */
+        .chess-wrapper { animation: float 4s ease-in-out infinite; }
+        .chess-visual {
+            width: 180px; height: 180px; display: grid;
+            grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr);
+            border: 4px solid #fff; border-radius: 20px;
+            margin-bottom: 1.5rem; transform: rotate(45deg);
+            box-shadow: 0 10px 20px rgba(147, 112, 219, 0.2);
+            background: white; overflow: hidden;
+        }
+        .cell { width: 100%; height: 100%; }
+        .cell.w { background: var(--chess-white); }
+        .cell.b { background: var(--chess-black); }
+
+        /* --- BUTTONS --- */
+        .next-btn {
+            margin-top: 2rem; background: #fff; border: 3px solid var(--accent);
+            color: var(--accent); padding: 0.8rem 2.5rem;
+            font-family: 'Fredoka', sans-serif; font-size: 1.2rem;
+            border-radius: 50px; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 10px rgba(255, 105, 180, 0.2);
+            text-transform: uppercase; font-weight: 600;
+        }
+        .next-btn:hover {
+            transform: scale(1.1) rotate(-3deg);
+            background: var(--accent); color: white;
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+        }
+        .next-btn:active { transform: scale(0.95); }
+
+        .story-text { font-size: 1.15rem; line-height: 1.6; margin-bottom: 1rem; font-weight: 500; }
+        .highlight { color: var(--accent); font-weight: 700; background: rgba(255, 105, 180, 0.1); padding: 0 5px; border-radius: 8px; }
+
+        @keyframes float { 0%, 100% { transform: translateY(0px) rotate(0deg); } 50% { transform: translateY(-10px) rotate(2deg); } }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
+        @keyframes heartbeat { 0% { transform: scale(1); } 15% { transform: scale(1.3); } 30% { transform: scale(1); } 45% { transform: scale(1.3); } 100% { transform: scale(1); } }
+        .heart-icon { display: inline-block; color: var(--accent); animation: heartbeat 2s infinite; }
+
+        .progress-container {
+            position: absolute; bottom: 40px; width: 150px; height: 8px;
+            background: rgba(255, 255, 255, 0.5); border-radius: 10px; overflow: hidden;
+            opacity: 0; transition: opacity 0.5s;
+        }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #ff69b4, #9370db); width: 0%; transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: 10px; }
+        
+        /* --- INTERACTIVE GIFT BOX CSS --- */
+        .gift-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 20px auto;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .gift-container:hover {
+            transform: scale(1.05);
+        }
+        
+        /* The Box Body */
+        .gift-box {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80%;
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            border-radius: 0 0 10px 10px;
+            z-index: 10;
+        }
+        .gift-box::before { /* Vertical Ribbon */
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 100%;
+            background: #fff;
+        }
+        
+        /* The Lid */
+        .gift-lid {
+            position: absolute;
+            top: 0;
+            left: -10%;
+            width: 120%;
+            height: 25%;
+            background: #ff1493;
+            border-radius: 5px;
+            z-index: 11;
+            transition: all 0.5s ease-in-out;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .gift-lid::before { /* Vertical Ribbon on lid */
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 100%;
+            background: #fff;
+        }
+        .gift-lid::after { /* Bow */
+            content: '🎀';
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 40px;
+        }
+
+        /* The Mystery Content (Question Mark) */
+        .mystery-content {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, 20%) scale(0.5); /* Start small and hidden */
+            font-size: 80px;
+            color: #9370db;
+            opacity: 0;
+            z-index: 5;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Fredoka', sans-serif;
+            font-weight: bold;
+            filter: drop-shadow(0 0 10px white);
+        }
+
+        /* Animations for opening */
+        .gift-container.opened .gift-lid {
+            transform: translateY(-60px) rotate(-20deg);
+            opacity: 0;
+        }
+        
+        .gift-container.opened .mystery-content {
+            opacity: 1;
+            transform: translate(-50%, -80%) scale(1.2); /* Pop up */
+        }
+        
+        .gift-hint {
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: var(--accent);
+            animation: pulse 1.5s infinite;
+        }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-container"></canvas>
+
+    <!-- INTRO SCENE: THE LETTER -->
+    <section id="intro-scene">
+        <div class="flex flex-col items-center intro-wrapper">
+            <div class="envelope-container" onclick="openLetter()">
+                <div class="envelope">
+                    <div class="envelope-sides"></div>
+                    
+                    <div class="flap">
+                        <div class="wax-seal">❤️</div>
+                    </div>
+                    <div class="letter">
+                        <h2 class="text-xl font-bold text-pink-500 mb-2">Pour Kanto</h2>
+                        <p class="text-sm text-gray-500">Une petite histoire pour toi...</p>
+                        <div class="mt-2 text-2xl">💌</div>
+                    </div>
+                </div>
+            </div>
+            <div class="click-hint">Clique pour ouvrir ✨</div>
+        </div>
+    </section>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-container" id="progress-bar-container">
+        <div class="progress-fill" id="progress"></div>
+    </div>
+
+    <!-- SLIDE 1 -->
+    <section class="slide" id="slide-1">
+        <div class="chess-wrapper">
+            <div class="chess-visual">
+                <div class="cell w"></div><div class="cell b"></div><div class="cell w"></div><div class="cell b"></div>
+                <div class="cell b"></div><div class="cell w"></div><div class="cell b"></div><div class="cell w"></div>
+                <div class="cell w"></div><div class="cell b"></div><div class="cell w"></div><div class="cell b"></div>
+                <div class="cell b"></div><div class="cell w"></div><div class="cell b"></div><div class="cell w"></div>
+                <div style="position: absolute; top: 25%; left: 25%; font-size: 3rem; transform: rotate(-45deg); color: #5d4037;">♟</div>
+            </div>
+        </div>
+        <h1 class="text-3xl md:text-5xl mb-4">L'Ouverture</h1>
+        <p class="story-text">
+            La vie, c'est comme un jeu d'échecs, mais en plus mignon.<br>
+            Parfois on hésite...<br>
+            Mais te rencontrer, c'était mon <span class="highlight">Meilleur Move</span> ! 🌸
+        </p>
+        <button class="next-btn" onclick="nextSlide()">Jouer le coup ✨</button>
+    </section>
+
+    <!-- SLIDE 2 -->
+    <section class="slide" id="slide-2">
+        <div class="mb-4 text-6xl animate-bounce">✨🥹✨</div>
+        <h2 class="text-2xl md:text-4xl mb-4">La Main Character</h2>
+        <p class="story-text">
+            Kanto, tu as cette énergie "Main Character". <br>
+            Comme dans nos animes préférés, tu mets de la couleur partout.<br>
+            Je ne veux pas être un PNJ...<br>
+            Je veux être ton <span class="highlight">Duo Préféré</span>.
+        </p>
+        <button class="next-btn" onclick="nextSlide()">Suivant 👉</button>
+    </section>
+
+    <!-- SLIDE 3 -->
+    <section class="slide" id="slide-3">
+        <div class="text-6xl mb-6 text-purple-400 drop-shadow-md" style="animation: float 3s infinite;">♛</div>
+        <h2 class="text-2xl md:text-4xl mb-4">Ton Cavalier</h2>
+        <p class="story-text">
+            La Reine est forte, mais elle a besoin d'un Chevalier.<br>
+            Quelqu'un qui te protège, qui te fait rire, et qui est <span class="highlight">digne de toi</span>.<br>
+            Je promets de toujours calculer 3 coups d'avance pour te faire sourire.
+        </p>
+        <button class="next-btn" onclick="nextSlide()">Promis ! 🤞</button>
+    </section>
+
+    <!-- SLIDE 4 -->
+    <section class="slide" id="slide-4">
+        <div class="heart-icon text-7xl mb-4">❤️</div>
+        <h2 class="text-3xl md:text-5xl mb-6 text-pink-500">Je t'aime</h2>
+        <p class="story-text px-4">
+            Ce n'est pas du bluff.<br>
+            C'est ma stratégie finale.<br>
+            <span class="font-bold text-purple-600">Je t'aime vraiment beaucoup, Kanto.</span>
+        </p>
+        <button class="next-btn" onclick="nextSlide()">La Surprise 🎁</button>
+    </section>
+
+    <!-- SLIDE 5: FINAL REVEAL (MODIFIED) -->
+    <section class="slide" id="slide-5">
+        
+        <h1 class="text-3xl md:text-4xl mb-6 text-purple-600">Ton cadeau t'attendra à Noël</h1>
+        
+        <!-- Interactive Gift Box -->
+        <div class="flex flex-col items-center">
+            <div class="gift-hint">Clique moi ! 👇</div>
+            <div class="gift-container" onclick="openGift(this)">
+                <div class="gift-lid"></div>
+                <div class="gift-box"></div>
+                <div class="mystery-content">?</div>
+            </div>
+        </div>
+
+        <p class="story-text mt-8">
+            Mais chut... 🤫<br>
+            <span class="highlight text-xl">"C'est un mystère ✨"</span>
+        </p>
+        <div class="mt-4 text-sm opacity-60 font-bold text-pink-400">
+            Checkmate to your heart. 💖
+        </div>
+    </section>
+
+    <script>
+        let currentStep = 0;
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progress');
+        const totalSteps = slides.length;
+        let isLetterOpen = false;
+
+        function openLetter() {
+            if(isLetterOpen) return;
+            isLetterOpen = true;
+            const envelopeContainer = document.querySelector('.envelope-container');
+            const introScene = document.getElementById('intro-scene');
+            const slide1 = document.getElementById('slide-1');
+            const progressBarContainer = document.getElementById('progress-bar-container');
+
+            envelopeContainer.classList.add('open');
+            setTimeout(() => {
+                introScene.style.opacity = '0';
+                setTimeout(() => {
+                    introScene.style.display = 'none';
+                    slide1.classList.add('active');
+                    progressBarContainer.style.opacity = '1';
+                    triggerSmallBurst();
+                }, 800);
+            }, 2500);
+        }
+
+        function updateProgress() {
+            const percent = ((currentStep + 1) / totalSteps) * 100;
+            progressBar.style.width = `${percent}%`;
+        }
+
+        function nextSlide() {
+            if (currentStep < slides.length - 1) {
+                slides[currentStep].classList.remove('active');
+                slides[currentStep].classList.add('exit');
+                currentStep++;
+                setTimeout(() => {
+                    slides[currentStep].classList.add('active');
+                    updateProgress();
+                    if(currentStep === slides.length - 1) {
+                        triggerCuteConfetti();
+                    }
+                }, 400);
+            }
+        }
+        updateProgress();
+
+        // --- GIFT BOX LOGIC ---
+        function openGift(element) {
+            if(element.classList.contains('opened')) return; // Prevent clicking twice
+            
+            element.classList.add('opened');
+            triggerCuteConfetti(); // Confetti when gift opens
+        }
+
+        const canvas = document.getElementById('canvas-container');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+        const symbols = ['❤️', '✨', '🌸', '💖', '⭐'];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 20 + 10;
+                this.speedX = (Math.random() - 0.5) * 1;
+                this.speedY = (Math.random() - 0.5) * 1;
+                this.symbol = symbols[Math.floor(Math.random() * symbols.length)];
+                this.opacity = Math.random() * 0.5 + 0.1;
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = (Math.random() - 0.5) * 2;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.rotation += this.rotationSpeed;
+                if (this.x < -50) this.x = width + 50;
+                if (this.x > width + 50) this.x = -50;
+                if (this.y < -50) this.y = height + 50;
+                if (this.y > height + 50) this.y = -50;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation * Math.PI / 180);
+                ctx.font = `${this.size}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.symbol, 0, 0);
+                ctx.restore();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 40; i++) particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        initParticles();
+        animate();
+
+        function triggerCuteConfetti() {
+            particles.forEach(p => {
+                p.speedY = - (Math.random() * 3 + 2);
+                p.speedX = (Math.random() - 0.5) * 2;
+                p.symbol = '💖';
+                p.opacity = 1;
             });
+            for(let i=0; i<30; i++) {
+                let p = new Particle();
+                p.y = height + 50;
+                p.speedY = - (Math.random() * 4 + 2);
+                p.symbol = '🎉';
+                particles.push(p);
+            }
         }
 
-        const canvas = document.getElementById('petal-canvas'); const ctx = canvas.getContext('2d'); let petals = [];
-        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; } window.addEventListener('resize', resizeCanvas); resizeCanvas();
-        function createPetal() { return { x: Math.random() * canvas.width, y: -10, size: Math.random() * 8 + 4, speedY: Math.random() * 3 + 1, speedX: Math.random() * 2 - 1, rotation: Math.random() * 360, rotationSpeed: Math.random() * 4 - 2 }; }
-        function startPetals() { for(let i=0; i<30; i++) petals.push(createPetal()); animatePetals(); }
-        function animatePetals() { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = '#ffb7b2'; petals.forEach((p, i) => { p.y += p.speedY; p.x += p.speedX; p.rotation += p.rotationSpeed; if (p.y > canvas.height) petals[i] = createPetal(); ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rotation * Math.PI / 180); ctx.beginPath(); ctx.ellipse(0, 0, p.size, p.size/2, 0, 0, Math.PI*2); ctx.fill(); ctx.restore(); }); requestAnimationFrame(animatePetals); }
+        function triggerSmallBurst() {
+             particles.forEach(p => {
+                p.speedY = (Math.random() - 0.5) * 10;
+                p.speedX = (Math.random() - 0.5) * 10;
+            });
+            setTimeout(() => {
+                 particles.forEach(p => {
+                    p.speedX = (Math.random() - 0.5) * 1;
+                    p.speedY = (Math.random() - 0.5) * 1;
+                });
+            }, 500);
+        }
     </script>
 </body>
 </html>

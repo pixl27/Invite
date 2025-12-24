@@ -6,10 +6,10 @@
     <title>KANTO // XMAS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Kosugi+Maru&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;900&family=Kosugi+Maru&family=Bangers&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Palette Pop Kawaii 2.0 (Plus vibrante) */
+            /* Palette Pop Kawaii */
             --bg-color: #fdf0f6;
             --grid-color: #ffdbe9;
             --ink: #1a1a1a;
@@ -19,11 +19,15 @@
             --pop-yellow: #ffec99;
             --pop-purple: #be93fd;
             --pop-white: #ffffff;
+
+            /* Domain Palette */
+            --domain-bg: #0d0015;
+            --domain-accent: #ff00ff;
+            --domain-text: #ffffff;
         }
 
         body {
             background-color: var(--bg-color);
-            /* Motif Grille Manga (Points) */
             background-image: radial-gradient(var(--grid-color) 20%, transparent 20%);
             background-size: 20px 20px;
             color: var(--ink);
@@ -32,10 +36,10 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- UTILS: Neo-Kawaii Borders --- */
+        /* --- UTILS --- */
         .pop-border {
             border: 3px solid var(--ink);
-            box-shadow: 6px 6px 0px var(--ink); /* Ombres plus profondes */
+            box-shadow: 6px 6px 0px var(--ink);
             transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         
@@ -44,7 +48,6 @@
             box-shadow: 3px 3px 0px var(--ink);
         }
 
-        /* --- STICKERS DECO --- */
         .sticker {
             position: fixed;
             pointer-events: none;
@@ -117,8 +120,9 @@
             margin-left: 1.5rem;
             position: relative;
         }
+        
+        .day-card.done { opacity: 0.6; filter: grayscale(0.8); }
 
-        /* Washi Tape Effect */
         .tape {
             position: absolute;
             top: -12px;
@@ -151,9 +155,8 @@
             border: 3px solid var(--ink);
             border-radius: 50%;
         }
-        .active .status-dot {
-            background: var(--pop-pink);
-        }
+        .active .status-dot { background: var(--pop-pink); }
+        .done .status-dot { background: #ccc; }
 
         .action-btn {
             background: var(--pop-purple);
@@ -170,179 +173,228 @@
             align-items: center;
             gap: 10px;
             border-radius: 12px;
-            /* Halftone pattern overlay on button */
             background-image: radial-gradient(rgba(255,255,255,0.3) 20%, transparent 20%);
             background-size: 10px 10px;
         }
 
-        /* --- MODAL (POPUP STYLE) --- */
-        .modal-overlay {
+        /* --- DOMAIN EXPANSION LAYER (FULL OVERHAUL) --- */
+        .domain-layer {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-        }
-        .modal-overlay.open { opacity: 1; pointer-events: all; }
-
-        .modal-box {
-            width: 90%;
-            max-width: 380px;
-            background: #fff;
-            border: 4px solid var(--ink);
-            box-shadow: 10px 10px 0px var(--ink);
-            border-radius: 24px;
-            padding: 0;
-            transform: scale(0.8) rotate(-3deg);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            overflow: hidden;
-        }
-        .modal-overlay.open .modal-box {
-            transform: scale(1) rotate(0deg);
+            background-color: var(--domain-bg);
+            z-index: 999;
+            /* Hidden by default with clip-path */
+            clip-path: circle(0% at 50% 50%);
+            /* Important for scroll: */
+            overflow-y: auto; 
+            overflow-x: hidden;
+            
+            /* Trippy background */
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(100, 0, 100, 0.2) 0%, transparent 60%),
+                repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(255, 0, 255, 0.1) 50px);
         }
 
-        .modal-header {
-            background: var(--pop-pink);
-            padding: 1.2rem;
-            border-bottom: 4px solid var(--ink);
+        .domain-container {
+            min-height: 100%;
+            width: 100%;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            /* Screentone pattern */
-            background-image: radial-gradient(rgba(255,255,255,0.4) 30%, transparent 30%);
-            background-size: 8px 8px;
+            justify-content: flex-start;
+            padding: 4rem 1.5rem;
+            box-sizing: border-box;
+        }
+
+        /* IMPACT TEXT ANIMATIONS */
+        .hand-sign {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 20px var(--domain-accent));
+        }
+
+        .domain-title {
+            font-family: 'Bangers', cursive; /* Manga font */
+            font-size: 15vw; /* Responsive huge text */
+            line-height: 0.9;
+            color: transparent;
+            -webkit-text-stroke: 2px #fff;
+            text-align: center;
+            margin-bottom: 4rem;
+            text-shadow: 4px 4px 0px var(--domain-accent);
+            transform: scale(0); /* Start hidden */
+            white-space: nowrap;
         }
         
-        .close-x {
-            font-family: 'Fredoka', sans-serif;
-            font-size: 2rem;
-            cursor: pointer;
-            color: var(--ink);
-            line-height: 0.8;
-            background: white;
-            border: 2px solid var(--ink);
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* Breaking text if needed on very small screens */
+        @media (max-width: 350px) {
+            .domain-title { font-size: 12vw; white-space: normal; }
         }
 
-        .modal-content {
-            padding: 1.5rem;
-            background: #fff;
-        }
-
-        /* Quality Stickers */
-        .quality-sticker {
-            background: var(--pop-yellow);
-            border: 3px solid var(--ink);
-            border-radius: 16px;
-            padding: 1rem;
-            margin-bottom: 1.2rem;
-            transform: rotate(-1deg);
-            display: flex;
-            gap: 12px;
-            opacity: 0;
-            box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
-        }
-        .quality-sticker:nth-child(even) {
-            transform: rotate(1deg);
-            background: var(--pop-blue);
-        }
-
-        .q-icon {
-            font-size: 2rem;
-            background: rgba(255,255,255,0.5);
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            border: 2px solid var(--ink);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        /* Mystery Box Clue */
-        .mystery-clue {
-            margin-top: 2rem;
-            border: 3px dashed var(--ink);
-            background: #f4f4f5;
-            padding: 1.2rem;
-            border-radius: 16px;
+        /* ATTRIBUTE IMPACTS (Not Cards anymore) */
+        .attribute-impact {
+            width: 100%;
             text-align: center;
-            opacity: 0;
+            margin-bottom: 5rem;
+            opacity: 0; /* Start hidden */
             position: relative;
         }
+
+        .impact-word {
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 900;
+            font-size: 3.5rem;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            /* Glowing Outline */
+            text-shadow: 
+                0 0 10px var(--domain-accent),
+                0 0 20px var(--domain-accent),
+                4px 4px 0px #000;
+            transform: rotate(-5deg);
+            display: inline-block;
+        }
         
-        .mystery-badge {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--ink);
-            color: var(--pop-white);
+        .attribute-impact:nth-child(even) .impact-word {
+            transform: rotate(5deg);
+            color: var(--pop-yellow);
+            text-shadow: 
+                0 0 10px var(--pop-blue),
+                0 0 20px var(--pop-blue),
+                4px 4px 0px #000;
+        }
+
+        .impact-desc {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.9);
+            background: rgba(0,0,0,0.5);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 1rem;
+            max-width: 80%;
+            border: 1px solid rgba(255,255,255,0.3);
             font-weight: bold;
-            font-size: 0.7rem;
-            padding: 4px 12px;
-            border-radius: 50px;
-            border: 2px solid white;
+        }
+
+        /* MYSTERY CUBE INDICE */
+        .cube-container {
+            perspective: 800px;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 2rem;
+            opacity: 0;
+        }
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: spin 10s infinite linear;
+        }
+        .face {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(100, 0, 200, 0.2);
+            border: 2px solid var(--domain-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.2) inset;
+        }
+        .front  { transform: rotateY(0deg) translateZ(100px); }
+        .back   { transform: rotateY(180deg) translateZ(100px); }
+        .right  { transform: rotateY(90deg) translateZ(100px); }
+        .left   { transform: rotateY(-90deg) translateZ(100px); }
+        .top    { transform: rotateX(90deg) translateZ(100px); }
+        .bottom { transform: rotateX(-90deg) translateZ(100px); }
+
+        @keyframes spin {
+            from { transform: rotateX(0) rotateY(0); }
+            to { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        .indice-text {
+            color: #00ffff;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 3rem;
+            padding: 1rem;
+            border: 2px dashed #00ffff;
+            border-radius: 12px;
+            background: rgba(0, 50, 50, 0.5);
+            opacity: 0;
+        }
+
+        .close-domain {
+            margin-top: 2rem;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            padding-bottom: 4rem; /* Space for scrolling */
+            opacity: 0;
+        }
+        
+        /* Flash Effect overlay */
+        .impact-flash {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            mix-blend-mode: difference; /* Invert colors briefly */
         }
 
     </style>
 </head>
 <body>
 
-    <!-- DECO STICKERS (Plus cartoon) -->
+    <!-- DECO STICKERS -->
     <div class="sticker text-5xl" style="top: 12%; left: -20px; transform: rotate(15deg);">🌸</div>
     <div class="sticker text-5xl" style="top: 22%; right: -20px; transform: rotate(-10deg);">✨</div>
-    <div class="sticker text-4xl" style="bottom: 18%; left: 10px; transform: rotate(5deg);">🍙</div>
     <div class="sticker text-6xl" style="bottom: 5%; right: 5px; transform: rotate(-15deg); opacity: 0.6;">⭐</div>
 
     <!-- HEADER -->
     <header class="header">
-        <div class="subtitle-badge">SPECIAL XMAS</div><br>
+        <div class="subtitle-badge">J-1 AVANT NOËL</div><br>
         <div class="main-title">KANTO</div>
     </header>
 
     <div class="timeline-wrapper">
         <div class="timeline-path"></div>
 
-        <!-- DAY 1: TODAY -->
-        <div class="day-card pop-border active" style="transform: rotate(-1deg);">
-            <div class="tape" style="background: rgba(255,219,233,0.8);"></div>
+        <!-- DAY 1: DONE -->
+        <div class="day-card pop-border done" style="transform: rotate(-1deg);">
+            <div class="tape" style="background: rgba(200,200,200,0.5);"></div>
             <div class="card-date">
                 <div class="status-dot"></div>
                 <span>23 DÉC.</span>
             </div>
-            <p class="mb-4 text-base font-bold text-gray-600 pl-4 border-l-4 border-pink-300">ANALYSE TERMINÉE</p>
-            <div class="action-btn pop-border" onclick="openModal()">
-                <span>DÉCHIFFRER</span> 👁️
-            </div>
+            <p class="text-sm text-gray-400 font-bold mb-2">ARCHIVÉ</p>
         </div>
 
-        <!-- DAY 2 -->
-        <div class="day-card pop-border" style="transform: rotate(1deg); opacity: 0.8; background: #f7f7f7;">
-            <div class="tape"></div>
+        <!-- DAY 2: ACTIVE (TODAY) -->
+        <div class="day-card pop-border active" style="transform: rotate(1deg);">
+            <div class="tape" style="background: rgba(255,219,233,0.8);"></div>
             <div class="card-date">
                 <div class="status-dot"></div>
-                <span class="text-gray-400">24 DÉC.</span>
+                <span>24 DÉC.</span>
             </div>
-            <div class="flex flex-col items-center justify-center py-4 text-gray-400">
-                <div class="text-3xl mb-2">🔒</div>
-                <p class="text-xs font-bold tracking-widest">EN ATTENTE</p>
+            <p class="mb-4 text-base font-bold text-gray-600 pl-4 border-l-4 border-pink-300">ANALYSE EN COURS...</p>
+            <div class="action-btn pop-border" onclick="activateDomain()">
+                <span>EXTENSION</span> 🤞
             </div>
         </div>
 
-        <!-- DAY 3 -->
+        <!-- DAY 3: LOCKED -->
         <div class="day-card pop-border" style="transform: rotate(-0.5deg); opacity: 0.8; background: #f7f7f7;">
             <div class="tape"></div>
             <div class="card-date">
@@ -356,87 +408,130 @@
         </div>
     </div>
 
-    <!-- MODAL -->
-    <div class="modal-overlay" id="modal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h2 class="font-bold font-fredoka text-xl text-white drop-shadow-md tracking-wide">TES ATTRIBUTS SPÉCIAUX</h2>
-                <div class="close-x" onclick="closeModal()">×</div>
+    <!-- FLASH EFFECT -->
+    <div class="impact-flash"></div>
+
+    <!-- DOMAIN EXPANSION LAYER -->
+    <div class="domain-layer" id="domain">
+        <div class="domain-container">
+            
+            <!-- Phase 1: Sign & Title -->
+            <div class="hand-sign">🤞</div>
+            <h1 class="domain-title">RYOIKI<br>TENKAI</h1>
+
+            <!-- Phase 2: Qualities (Impact Style) -->
+            <div class="attribute-impact" id="att1">
+                <div class="impact-word">ADORABLE</div><br>
+                <div class="impact-desc">Niveau Spécial : Charme Absolu.<br>Impossible d'exorciser tant de mignonnerie.</div>
             </div>
-            <div class="modal-content">
-                
-                <!-- Quality 1: HUMOUR -->
-                <div class="quality-sticker">
-                    <div class="q-icon">😆</div>
-                    <div>
-                        <h3 class="font-bold text-sm uppercase tracking-wide">Sens de l'Humour</h3>
-                        <p class="text-xs leading-snug mt-1 font-medium text-gray-700">
-                            Extension du Territoire : <span class="font-bold text-pink-600">Joie Infinie</span>. Comme Satoru, tu désamorces n'importe quelle crise avec un sourire. Ton rire brise toutes les barrières.
-                        </p>
-                    </div>
-                </div>
 
-                <!-- Quality 2: BEAUTY -->
-                <div class="quality-sticker">
-                    <div class="q-icon">💖</div>
-                    <div>
-                        <h3 class="font-bold text-sm uppercase tracking-wide">Beauté Naturelle</h3>
-                        <p class="text-xs leading-snug mt-1 font-medium text-gray-700">
-                            Attribut : <span class="font-bold text-blue-600">Six Yeux de la Beauté</span>. Pas besoin d'artifices. Ton charme frappe directement l'âme avec l'impact d'un Rayon Noir.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Mystery Clue -->
-                <div class="mystery-clue">
-                    <div class="mystery-badge">INDICE DE CLASSE S</div>
-                    <p class="text-sm font-bold leading-relaxed text-gray-800">
-                        "Une boîte qui pèse lourd... Une énergie violette s'en échappe. Elle contient les âmes des plus grands exorciste et fléaux."
-                    </p>
-                </div>
-
+            <div class="attribute-impact" id="att2">
+                <div class="impact-word">MIGNONNE</div><br>
+                <div class="impact-desc">Technique Innée : Kawaii Flash.<br>Effet de zone : Bonheur immédiat.</div>
             </div>
+
+            <!-- Phase 3: The Clue (Sealed Cube) -->
+            <div class="cube-container">
+                <div class="cube">
+                    <div class="face front">👁️</div>
+                    <div class="face back">⛓️</div>
+                    <div class="face right">🎌</div>
+                    <div class="face left">🧿</div>
+                    <div class="face top">📦</div>
+                    <div class="face bottom">✨</div>
+                </div>
+            </div>
+
+            <div class="indice-text">
+                "EXTENSION DE TERRITOIRE :<br>Le coffret renferme une scène complète scellée dans de l'acrylique... Tes personnages favoris y règnent en maîtres."
+            </div>
+
+            <div class="close-domain" onclick="closeDomain()">Désactiver le Territoire</div>
         </div>
     </div>
 
     <script>
-        const modal = document.getElementById('modal');
-        const contentElements = document.querySelectorAll('.quality-sticker, .mystery-clue');
-
-        function openModal() {
-            modal.classList.add('open');
-            
-            // Pop in animation for elements inside
-            gsap.to(contentElements, {
-                opacity: 1,
-                scale: 1,
-                y: 0,
-                rotation: 0, 
-                duration: 0.5,
-                stagger: 0.15,
-                ease: "back.out(1.5)",
-                delay: 0.2
-            });
-        }
-
-        function closeModal() {
-            modal.classList.remove('open');
-            
-            // Reset for next open
-            gsap.set(contentElements, {
-                opacity: 0,
-                y: 20,
-                scale: 0.9
-            });
-        }
+        const domain = document.getElementById('domain');
+        const flash = document.querySelector('.impact-flash');
         
-        // Initial set
-        gsap.set(contentElements, { opacity: 0, y: 20, scale: 0.9 });
+        // Elements to animate
+        const hand = document.querySelector('.hand-sign');
+        const title = document.querySelector('.domain-title');
+        const att1 = document.getElementById('att1');
+        const att2 = document.getElementById('att2');
+        const cube = document.querySelector('.cube-container');
+        const indice = document.querySelector('.indice-text');
+        const closeBtn = document.querySelector('.close-domain');
 
-        // Add slight random rotation to cards on load
-        document.querySelectorAll('.day-card').forEach(card => {
-            // Slight jitter for organic feel (handled via css transforms mostly)
-        });
+        function activateDomain() {
+            // 1. IMPACT FLASH (Anime style negative flash)
+            gsap.to(flash, { opacity: 1, duration: 0.1, yoyo: true, repeat: 1 });
+
+            // 2. EXPAND DOMAIN (Circle Wipe)
+            gsap.to(domain, {
+                clipPath: "circle(150% at 50% 50%)",
+                duration: 1.2,
+                ease: "expo.inOut",
+                delay: 0.1
+            });
+
+            // 3. SEQUENCE ANIMATION
+            const tl = gsap.timeline({ delay: 0.5 });
+
+            // Hand Sign Float
+            tl.fromTo(hand, 
+                { scale: 0, rotation: -180 }, 
+                { scale: 1, rotation: 0, duration: 0.5, ease: "back.out(2)" }
+            );
+
+            // TITLE SLAM (Big Scale down)
+            tl.fromTo(title,
+                { opacity: 0, scale: 3, letterSpacing: '20px' },
+                { opacity: 1, scale: 1, letterSpacing: '0px', duration: 0.4, ease: "power4.out" },
+                "-=0.2"
+            );
+
+            // IMPACT 1: Adorable (Comes from left with shake)
+            tl.fromTo(att1,
+                { x: -100, opacity: 0, scale: 2 },
+                { x: 0, opacity: 1, scale: 1, duration: 0.3, ease: "power4.out" }
+            );
+            // Camera shake simulation
+            tl.to("body", { x: -5, duration: 0.05, yoyo: true, repeat: 3 });
+
+            // IMPACT 2: Mignonne (Comes from right with shake)
+            tl.fromTo(att2,
+                { x: 100, opacity: 0, scale: 2 },
+                { x: 0, opacity: 1, scale: 1, duration: 0.3, ease: "power4.out" }
+            );
+            tl.to("body", { x: 5, duration: 0.05, yoyo: true, repeat: 3 });
+
+            // CUBE & INDICE REVEAL
+            tl.to([cube, indice, closeBtn], {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                stagger: 0.2,
+                ease: "power2.out"
+            }, "+=0.5");
+        }
+
+        function closeDomain() {
+            gsap.to(domain, {
+                clipPath: "circle(0% at 50% 50%)",
+                duration: 0.8,
+                ease: "power4.in"
+            });
+            
+            // Reset elements
+            gsap.set([hand, title, att1, att2, cube, indice, closeBtn], { opacity: 0 });
+        }
+
+        // Init positions
+        gsap.set([hand, title, att1, att2, cube, indice, closeBtn], { opacity: 0 });
+        gsap.set(cube, { y: 50 });
+        gsap.set(indice, { y: 50 });
+
     </script>
 </body>
 </html>

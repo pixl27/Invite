@@ -3,534 +3,645 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KANTO // XMAS</title>
+    <title>JOYEUX NOËL KANTO ❤️</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;900&family=Kosugi+Maru&family=Bangers&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;900&family=Kosugi+Maru&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Palette Pop Kawaii */
-            --bg-color: #fdf0f6;
-            --grid-color: #ffdbe9;
+            --bg-timeline: #fdf0f6;
             --ink: #1a1a1a;
-            
-            --pop-pink: #ff7eb6;
-            --pop-blue: #7cd6fd;
-            --pop-yellow: #ffec99;
-            --pop-purple: #be93fd;
-            --pop-white: #ffffff;
-
-            /* Domain Palette */
-            --domain-bg: #0d0015;
-            --domain-accent: #ff00ff;
-            --domain-text: #ffffff;
+            --xmas-red: #ff4757;
+            --xmas-green: #2ed573;
+            --xmas-gold: #ffa502;
+            --night-bg: #0f172a;
         }
 
         body {
-            background-color: var(--bg-color);
-            background-image: radial-gradient(var(--grid-color) 20%, transparent 20%);
-            background-size: 20px 20px;
-            color: var(--ink);
+            background-color: var(--bg-timeline);
             font-family: 'Kosugi Maru', sans-serif;
-            overflow-x: hidden;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- UTILS --- */
-        .pop-border {
-            border: 3px solid var(--ink);
-            box-shadow: 6px 6px 0px var(--ink);
-            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        
-        .pop-border:active {
-            transform: translate(3px, 3px);
-            box-shadow: 3px 3px 0px var(--ink);
-        }
-
-        .sticker {
-            position: fixed;
-            pointer-events: none;
-            z-index: 0;
-            filter: drop-shadow(3px 3px 0px rgba(0,0,0,0.1));
-        }
-
-        /* --- HEADER --- */
-        .header {
-            padding: 3rem 1rem 2rem;
-            text-align: center;
-            position: relative;
-            z-index: 10;
-        }
-        
-        .main-title {
-            font-family: 'Fredoka', sans-serif;
-            font-weight: 900;
-            font-size: 4rem;
-            line-height: 0.9;
-            color: var(--pop-white);
-            text-transform: uppercase;
-            -webkit-text-stroke: 3px var(--ink); 
-            text-shadow: 5px 5px 0px var(--pop-purple);
-            letter-spacing: -2px;
-            transform: rotate(-3deg);
-            display: inline-block;
-        }
-
-        .subtitle-badge {
-            background: var(--pop-blue);
-            color: var(--ink);
-            border: 2px solid var(--ink);
-            padding: 0.3rem 1rem;
-            font-size: 0.9rem;
-            font-weight: 900;
-            border-radius: 12px;
-            transform: rotate(2deg) translateY(-10px);
-            display: inline-block;
-            box-shadow: 3px 3px 0px var(--ink);
-        }
-
-        /* --- TIMELINE --- */
-        .timeline-wrapper {
-            max-width: 450px;
-            margin: 0 auto;
-            padding: 0 1.5rem 6rem;
-            position: relative;
-            z-index: 10;
-        }
-
-        .timeline-path {
+        /* --- STYLES TIMELINE (Intro) --- */
+        .timeline-view {
             position: absolute;
-            left: 2rem;
-            top: 0;
-            bottom: 0;
-            width: 6px;
-            background-image: radial-gradient(var(--ink) 20%, transparent 20%);
-            background-size: 6px 20px;
-            background-repeat: repeat-y;
-            opacity: 0.2;
-        }
-
-        /* --- CARDS --- */
-        .day-card {
-            background: white;
-            border-radius: 16px;
-            padding: 1.2rem;
-            margin-bottom: 3rem;
-            margin-left: 1.5rem;
-            position: relative;
-        }
-        
-        .day-card.done { opacity: 0.6; filter: grayscale(0.8); }
-
-        .tape {
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%) rotate(-1deg);
-            width: 100px;
-            height: 24px;
-            background: rgba(255, 255, 255, 0.8);
-            border-left: 2px dashed rgba(0,0,0,0.1);
-            border-right: 2px dashed rgba(0,0,0,0.1);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            z-index: 10;
-        }
-
-        .card-date {
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--ink);
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .status-dot {
-            width: 16px;
-            height: 16px;
-            background: var(--grid-color);
-            border: 3px solid var(--ink);
-            border-radius: 50%;
-        }
-        .active .status-dot { background: var(--pop-pink); }
-        .done .status-dot { background: #ccc; }
-
-        .action-btn {
-            background: var(--pop-purple);
-            color: white;
-            width: 100%;
-            padding: 1rem;
-            font-weight: 900;
-            font-family: 'Fredoka', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            border-radius: 12px;
-            background-image: radial-gradient(rgba(255,255,255,0.3) 20%, transparent 20%);
-            background-size: 10px 10px;
-        }
-
-        /* --- DOMAIN EXPANSION LAYER (FULL OVERHAUL) --- */
-        .domain-layer {
-            position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--domain-bg);
-            z-index: 999;
-            /* Hidden by default with clip-path */
-            clip-path: circle(0% at 50% 50%);
-            /* Important for scroll: */
-            overflow-y: auto; 
-            overflow-x: hidden;
-            
-            /* Trippy background */
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(100, 0, 100, 0.2) 0%, transparent 60%),
-                repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(255, 0, 255, 0.1) 50px);
-        }
-
-        .domain-container {
-            min-height: 100%;
-            width: 100%;
+            z-index: 10;
+            background-image: radial-gradient(#ffdbe9 20%, transparent 20%);
+            background-size: 20px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            padding: 4rem 1.5rem;
-            box-sizing: border-box;
+            padding-top: 3rem;
+            transition: opacity 1s;
         }
 
-        /* IMPACT TEXT ANIMATIONS */
-        .hand-sign {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            filter: drop-shadow(0 0 20px var(--domain-accent));
-        }
-
-        .domain-title {
-            font-family: 'Bangers', cursive; /* Manga font */
-            font-size: 15vw; /* Responsive huge text */
-            line-height: 0.9;
-            color: transparent;
-            -webkit-text-stroke: 2px #fff;
-            text-align: center;
-            margin-bottom: 4rem;
-            text-shadow: 4px 4px 0px var(--domain-accent);
-            transform: scale(0); /* Start hidden */
-            white-space: nowrap;
-        }
-        
-        /* Breaking text if needed on very small screens */
-        @media (max-width: 350px) {
-            .domain-title { font-size: 12vw; white-space: normal; }
-        }
-
-        /* ATTRIBUTE IMPACTS (Not Cards anymore) */
-        .attribute-impact {
-            width: 100%;
-            text-align: center;
-            margin-bottom: 5rem;
-            opacity: 0; /* Start hidden */
-            position: relative;
-        }
-
-        .impact-word {
+        .header-title {
             font-family: 'Fredoka', sans-serif;
-            font-weight: 900;
-            font-size: 3.5rem;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: -2px;
-            /* Glowing Outline */
-            text-shadow: 
-                0 0 10px var(--domain-accent),
-                0 0 20px var(--domain-accent),
-                4px 4px 0px #000;
-            transform: rotate(-5deg);
-            display: inline-block;
+            font-size: 3rem;
+            color: var(--xmas-red);
+            text-shadow: 2px 2px 0px white;
+            transform: rotate(-3deg);
+            margin-bottom: 2rem;
+        }
+
+        .final-card {
+            background: white;
+            border: 4px solid var(--xmas-gold);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 85%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 0px rgba(0,0,0,0.1);
+            position: relative;
+            cursor: pointer;
+            animation: pulse-gold 2s infinite;
+        }
+
+        .card-badge {
+            background: var(--xmas-red);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-weight: bold;
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 2px solid white;
+        }
+
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(255, 165, 2, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(255, 165, 2, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 165, 2, 0); }
+        }
+
+        /* --- SCÈNE DE NOËL --- */
+        .christmas-scene {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, #090910 0%, #1a1f3c 100%);
+            z-index: 20;
+            opacity: 0;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto; /* Allow scroll at the end */
         }
         
-        .attribute-impact:nth-child(even) .impact-word {
-            transform: rotate(5deg);
-            color: var(--pop-yellow);
-            text-shadow: 
-                0 0 10px var(--pop-blue),
-                0 0 20px var(--pop-blue),
-                4px 4px 0px #000;
+        .christmas-scene.active {
+            opacity: 1;
+            pointer-events: all;
         }
 
-        .impact-desc {
-            font-size: 1rem;
-            color: rgba(255,255,255,0.9);
-            background: rgba(0,0,0,0.5);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            display: inline-block;
-            margin-top: 1rem;
-            max-width: 80%;
-            border: 1px solid rgba(255,255,255,0.3);
-            font-weight: bold;
-        }
-
-        /* MYSTERY CUBE INDICE */
-        .cube-container {
-            perspective: 800px;
-            width: 200px;
-            height: 200px;
-            margin: 0 auto 2rem;
-            opacity: 0;
-        }
-        .cube {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            animation: spin 10s infinite linear;
-        }
-        .face {
+        #snow-canvas {
             position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- TEXTE HISTOIRE --- */
+        .story-text {
+            font-family: 'Mountains of Christmas', cursive;
+            color: white;
+            font-size: 2rem;
+            text-align: center;
+            max-width: 80%;
+            text-shadow: 0 0 10px rgba(255,255,255,0.8);
+            position: absolute;
+            top: 20%;
+            opacity: 0;
+            transform: translateY(20px);
+            z-index: 30;
+        }
+
+        /* --- LA BOÎTE CADEAU --- */
+        .gift-wrapper {
+            position: relative;
             width: 200px;
             height: 200px;
-            background: rgba(100, 0, 200, 0.2);
-            border: 2px solid var(--domain-accent);
+            margin-top: 50px;
+            z-index: 40;
+            cursor: pointer;
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        .gift-box {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80%;
+            background: #ff4757;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .gift-box::before {
+            content: '';
+            position: absolute;
+            left: 50%; top: 0; bottom: 0;
+            width: 30px;
+            background: white;
+            transform: translateX(-50%);
+        }
+        
+        .gift-lid {
+            position: absolute;
+            top: 0; left: -10%;
+            width: 120%; height: 25%;
+            background: #ff6b81;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 2;
+            transition: transform 0.2s;
+        }
+        .gift-lid::before {
+            content: '';
+            position: absolute;
+            left: 50%; top: 0; bottom: 0;
+            width: 30px;
+            background: white;
+            transform: translateX(-50%);
+        }
+        .gift-bow {
+            position: absolute;
+            top: -40px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 4rem;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+            z-index: 3;
+        }
+
+        .tap-hint {
+            position: absolute;
+            bottom: -60px;
+            width: 140%;
+            left: -20%;
+            text-align: center;
+            color: #ffd700;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.9rem;
+            animation: bounce 1s infinite;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.3);
+            padding: 5px;
+            border-radius: 10px;
+            line-height: 1.2;
+        }
+
+        /* --- LES OBJETS (LOOT) --- */
+        .loot-item {
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 1rem;
+            transform: translate(-50%, -50%) scale(0);
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.4);
+            z-index: 100;
+            border: 4px solid var(--ink);
+            display: none;
+        }
+
+        .loot-image {
+            width: 100%;
+            height: 180px;
+            background: #f0f0f0;
+            border-radius: 12px;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
-            color: white;
-            box-shadow: 0 0 20px rgba(255, 0, 255, 0.2) inset;
-        }
-        .front  { transform: rotateY(0deg) translateZ(100px); }
-        .back   { transform: rotateY(180deg) translateZ(100px); }
-        .right  { transform: rotateY(90deg) translateZ(100px); }
-        .left   { transform: rotateY(-90deg) translateZ(100px); }
-        .top    { transform: rotateX(90deg) translateZ(100px); }
-        .bottom { transform: rotateX(-90deg) translateZ(100px); }
-
-        @keyframes spin {
-            from { transform: rotateX(0) rotateY(0); }
-            to { transform: rotateX(360deg) rotateY(360deg); }
-        }
-
-        .indice-text {
-            color: #00ffff;
-            text-align: center;
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 3rem;
-            padding: 1rem;
-            border: 2px dashed #00ffff;
-            border-radius: 12px;
-            background: rgba(0, 50, 50, 0.5);
-            opacity: 0;
-        }
-
-        .close-domain {
-            margin-top: 2rem;
-            color: rgba(255,255,255,0.5);
-            font-size: 0.9rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            padding-bottom: 4rem; /* Space for scrolling */
-            opacity: 0;
+            font-size: 5rem;
+            border: 2px dashed var(--ink);
+            position: relative;
+            overflow: hidden;
         }
         
-        /* Flash Effect overlay */
-        .impact-flash {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: white;
-            z-index: 1000;
-            pointer-events: none;
+        .loot-bg-pattern {
+            position: absolute;
+            width: 100%; height: 100%;
+            opacity: 0.1;
+            background-image: repeating-linear-gradient(45deg, #000 0, #000 2px, transparent 2px, transparent 10px);
+        }
+
+        .loot-title {
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 900;
+            color: var(--xmas-red);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        .loot-desc {
+            font-size: 0.9rem;
+            color: #555;
+            line-height: 1.4;
+        }
+
+        .jjk-tag {
+            background: #2d2d2d;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 0.5rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* --- FINAL MESSAGE & SUMMARY --- */
+        .final-message-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            width: 100%;
+            padding-bottom: 50px; /* Space for scrolling */
+        }
+
+        .gift-summary {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--xmas-gold);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            width: 90%;
+            max-width: 350px;
+            text-align: left;
             opacity: 0;
-            mix-blend-mode: difference; /* Invert colors briefly */
+            transform: translateY(20px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .gift-summary h3 {
+            font-family: 'Fredoka', sans-serif;
+            color: var(--xmas-gold);
+            margin-bottom: 1rem;
+            text-align: center;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            font-family: 'Kosugi Maru', sans-serif;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 0.5rem;
+        }
+        .summary-item:last-child { border-bottom: none; }
+        .summary-check { color: var(--xmas-green); font-size: 1.2rem; }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
 
     </style>
 </head>
 <body>
 
-    <!-- DECO STICKERS -->
-    <div class="sticker text-5xl" style="top: 12%; left: -20px; transform: rotate(15deg);">🌸</div>
-    <div class="sticker text-5xl" style="top: 22%; right: -20px; transform: rotate(-10deg);">✨</div>
-    <div class="sticker text-6xl" style="bottom: 5%; right: 5px; transform: rotate(-15deg); opacity: 0.6;">⭐</div>
-
-    <!-- HEADER -->
-    <header class="header">
-        <div class="subtitle-badge">J-1 AVANT NOËL</div><br>
-        <div class="main-title">KANTO</div>
-    </header>
-
-    <div class="timeline-wrapper">
-        <div class="timeline-path"></div>
-
-        <!-- DAY 1: DONE -->
-        <div class="day-card pop-border done" style="transform: rotate(-1deg);">
-            <div class="tape" style="background: rgba(200,200,200,0.5);"></div>
-            <div class="card-date">
-                <div class="status-dot"></div>
-                <span>23 DÉC.</span>
-            </div>
-            <p class="text-sm text-gray-400 font-bold mb-2">ARCHIVÉ</p>
-        </div>
-
-        <!-- DAY 2: ACTIVE (TODAY) -->
-        <div class="day-card pop-border active" style="transform: rotate(1deg);">
-            <div class="tape" style="background: rgba(255,219,233,0.8);"></div>
-            <div class="card-date">
-                <div class="status-dot"></div>
-                <span>24 DÉC.</span>
-            </div>
-            <p class="mb-4 text-base font-bold text-gray-600 pl-4 border-l-4 border-pink-300">ANALYSE EN COURS...</p>
-            <div class="action-btn pop-border" onclick="activateDomain()">
-                <span>EXTENSION</span> 🤞
+    <!-- VUE 1 : LA TIMELINE FINALE -->
+    <div class="timeline-view" id="introView">
+        <h1 class="header-title">25 DÉCEMBRE</h1>
+        
+        <div class="final-card" onclick="startShow()">
+            <div class="card-badge">DÉBLOQUÉ</div>
+            <div class="text-6xl mb-4">🎁</div>
+            <h2 class="font-bold text-2xl text-gray-800 mb-2">LE GRAND FINAL</h2>
+            <p class="text-gray-500 mb-4 text-sm">Prête pour ton cadeau ?</p>
+            <div class="bg-red-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg transform active:scale-95 transition-transform inline-block">
+                OUVRIR MAINTENANT
             </div>
         </div>
-
-        <!-- DAY 3: LOCKED -->
-        <div class="day-card pop-border" style="transform: rotate(-0.5deg); opacity: 0.8; background: #f7f7f7;">
-            <div class="tape"></div>
-            <div class="card-date">
-                <div class="status-dot" style="border-color: #fab1a0;"></div>
-                <span class="text-gray-400">25 DÉC.</span>
-            </div>
-            <div class="flex flex-col items-center justify-center py-4 text-gray-400">
-                <div class="text-3xl mb-2">🎁</div>
-                <p class="text-xs font-bold tracking-widest">LE CADEAU</p>
-            </div>
+        
+        <div class="absolute bottom-0 w-full flex justify-between px-4 opacity-50 pb-4">
+            <span class="text-6xl">🎄</span>
+            <span class="text-6xl">✨</span>
+            <span class="text-6xl">🎄</span>
         </div>
     </div>
 
-    <!-- FLASH EFFECT -->
-    <div class="impact-flash"></div>
+    <!-- VUE 2 : SCÈNE DE NOËL -->
+    <div class="christmas-scene" id="sceneView">
+        <canvas id="snow-canvas"></canvas>
 
-    <!-- DOMAIN EXPANSION LAYER -->
-    <div class="domain-layer" id="domain">
-        <div class="domain-container">
-            
-            <!-- Phase 1: Sign & Title -->
-            <div class="hand-sign">🤞</div>
-            <h1 class="domain-title">RYOIKI<br>TENKAI</h1>
+        <!-- Container pour le texte narratif -->
+        <div id="story-container"></div>
 
-            <!-- Phase 2: Qualities (Impact Style) -->
-            <div class="attribute-impact" id="att1">
-                <div class="impact-word">ADORABLE</div><br>
-                <div class="impact-desc">Niveau Spécial : Charme Absolu.<br>Impossible d'exorciser tant de mignonnerie.</div>
+        <!-- La Boîte Cadeau -->
+        <div class="gift-wrapper" id="giftBox" onclick="nextLoot()">
+            <div class="gift-lid">
+                <div class="gift-bow">🎀</div>
             </div>
-
-            <div class="attribute-impact" id="att2">
-                <div class="impact-word">MIGNONNE</div><br>
-                <div class="impact-desc">Technique Innée : Kawaii Flash.<br>Effet de zone : Bonheur immédiat.</div>
+            <div class="gift-box"></div>
+            <div class="tap-hint">
+                <span class="block text-xl mb-1">👆</span>
+                Clique plusieurs fois<br>pour tout déballer !
             </div>
+        </div>
 
-            <!-- Phase 3: The Clue (Sealed Cube) -->
-            <div class="cube-container">
-                <div class="cube">
-                    <div class="face front">👁️</div>
-                    <div class="face back">⛓️</div>
-                    <div class="face right">🎌</div>
-                    <div class="face left">🧿</div>
-                    <div class="face top">📦</div>
-                    <div class="face bottom">✨</div>
-                </div>
+        <!-- Les Objets (Générés par JS) -->
+        <div id="loot-layer"></div>
+
+        <!-- Message de fin -->
+        <div class="final-message-container mt-10" id="finalMsg">
+            <div class="text-6xl mb-4 animate-bounce">❤️</div>
+            <div class="story-text" style="position: relative; top: auto; transform: none; opacity: 1; margin-bottom: 0.5rem;">Joyeux Noël</div>
+            <div class="text-4xl mt-2 font-fredoka text-white text-center">KANTO</div>
+            <div class="text-sm mt-2 opacity-70 font-sans text-white">Ton plus grand fan.</div>
+
+            <!-- SUMMARY LIST -->
+            <div class="gift-summary" id="giftSummary">
+                <h3>Ton Coffret Spécial JJK</h3>
+                <div id="summaryList"></div>
             </div>
-
-            <div class="indice-text">
-                "EXTENSION DE TERRITOIRE :<br>Le coffret renferme une scène complète scellée dans de l'acrylique... Tes personnages favoris y règnent en maîtres."
-            </div>
-
-            <div class="close-domain" onclick="closeDomain()">Désactiver le Territoire</div>
         </div>
     </div>
 
     <script>
-        const domain = document.getElementById('domain');
-        const flash = document.querySelector('.impact-flash');
+        // --- DONNÉES DU PACK JJK ---
+        const gifts = [
+            {
+                emoji: "📸",
+                title: "Boîte Lomo",
+                desc: "Pour capturer chaque instant précieux. Des souvenirs imprimés avec amour.",
+                tag: "MÉMOIRE VISUELLE"
+            },
+            {
+                emoji: "✏️",
+                title: "Trousse JJK",
+                desc: "Le kit parfait pour noter tes techniques maudites (ou juste tes cours).",
+                tag: "ACCESSOIRE SCOLAIRE"
+            },
+            {
+                emoji: "📜",
+                title: "Poster Collector",
+                desc: "Une Extension de Territoire pour ton mur. Classe S garantie.",
+                tag: "DÉCORATION"
+            },
+            {
+                emoji: "✨",
+                title: "Stickers Pack",
+                desc: "Pour coller ta personnalité partout. Sceaux de protection inclus.",
+                tag: "CUSTOMISATION"
+            },
+            {
+                emoji: "🧸",
+                title: "Figurine",
+                desc: "Un petit compagnon pour veiller sur toi quand je ne suis pas là.",
+                tag: "GARDE DU CORPS"
+            }
+        ];
+
+        // --- HISTOIRE ---
+        const storyLines = [
+            "Kanto...",
+            "Pour ce Noël...",
+            "Je voulais faire quelque chose d'unique.",
+            "Comme toi.",
+            "Voici ton trésor..."
+        ];
+
+        // --- LOGIQUE ---
+        const introView = document.getElementById('introView');
+        const sceneView = document.getElementById('sceneView');
+        const storyContainer = document.getElementById('story-container');
+        const giftBox = document.getElementById('giftBox');
+        const lootLayer = document.getElementById('loot-layer');
+        const lid = document.querySelector('.gift-lid');
+        const summaryList = document.getElementById('summaryList');
         
-        // Elements to animate
-        const hand = document.querySelector('.hand-sign');
-        const title = document.querySelector('.domain-title');
-        const att1 = document.getElementById('att1');
-        const att2 = document.getElementById('att2');
-        const cube = document.querySelector('.cube-container');
-        const indice = document.querySelector('.indice-text');
-        const closeBtn = document.querySelector('.close-domain');
+        let lootIndex = 0;
+        let isAnimating = false;
 
-        function activateDomain() {
-            // 1. IMPACT FLASH (Anime style negative flash)
-            gsap.to(flash, { opacity: 1, duration: 0.1, yoyo: true, repeat: 1 });
+        // 1. DÉMARRAGE
+        function startShow() {
+            gsap.to(introView, { y: -1000, opacity: 0, duration: 1.5, ease: "power2.in" });
+            sceneView.classList.add('active');
+            initSnow();
+            animateSnow();
+            playStorySequence();
+        }
 
-            // 2. EXPAND DOMAIN (Circle Wipe)
-            gsap.to(domain, {
-                clipPath: "circle(150% at 50% 50%)",
-                duration: 1.2,
-                ease: "expo.inOut",
-                delay: 0.1
+        // 2. SÉQUENCE HISTOIRE
+        function playStorySequence() {
+            const tl = gsap.timeline();
+            
+            storyLines.forEach((line, index) => {
+                const el = document.createElement('div');
+                el.classList.add('story-text');
+                el.innerText = line;
+                storyContainer.appendChild(el);
+
+                tl.to(el, { opacity: 1, y: 0, duration: 1 });
+                tl.to(el, { opacity: 0, y: -20, duration: 0.8, delay: 1.2 });
             });
 
-            // 3. SEQUENCE ANIMATION
-            const tl = gsap.timeline({ delay: 0.5 });
+            tl.to(giftBox, { 
+                opacity: 1, 
+                scale: 1, 
+                duration: 1, 
+                ease: "elastic.out(1, 0.5)",
+                onComplete: () => {
+                    gsap.to(giftBox, { y: -10, yoyo: true, repeat: -1, duration: 1.5, ease: "sine.inOut" });
+                }
+            });
+        }
 
-            // Hand Sign Float
-            tl.fromTo(hand, 
-                { scale: 0, rotation: -180 }, 
-                { scale: 1, rotation: 0, duration: 0.5, ease: "back.out(2)" }
+        // 3. OUVERTURE CADEAUX
+        function nextLoot() {
+            if (isAnimating) return;
+            
+            if (lootIndex >= gifts.length) {
+                showFinalMessage();
+                return;
+            }
+
+            isAnimating = true;
+            const item = gifts[lootIndex];
+
+            // Masquer le hint après le premier clic
+            document.querySelector('.tap-hint').style.display = 'none';
+
+            // Animation Boîte
+            const shakeTl = gsap.timeline();
+            shakeTl.to(giftBox, { rotation: 5, duration: 0.1, yoyo: true, repeat: 5 });
+            shakeTl.to(lid, { y: -60, rotation: -10, duration: 0.3 }, "-=0.2");
+
+            // Créer la carte Loot
+            const card = document.createElement('div');
+            card.classList.add('loot-item');
+            card.innerHTML = `
+                <div class="loot-image">
+                    <div class="loot-bg-pattern"></div>
+                    <span style="z-index:2">${item.emoji}</span>
+                </div>
+                <div class="loot-title">${item.title}</div>
+                <p class="loot-desc">${item.desc}</p>
+                <div class="jjk-tag">${item.tag}</div>
+                <div style="margin-top:10px; font-size:0.8rem; color:#aaa">(Clique pour fermer)</div>
+            `;
+            lootLayer.appendChild(card);
+            card.style.display = 'block';
+
+            shakeTl.fromTo(card, 
+                { scale: 0, y: 100, rotation: Math.random() * 20 - 10 },
+                { scale: 1, y: 0, rotation: 0, duration: 0.8, ease: "back.out(1.7)" }
             );
 
-            // TITLE SLAM (Big Scale down)
-            tl.fromTo(title,
-                { opacity: 0, scale: 3, letterSpacing: '20px' },
-                { opacity: 1, scale: 1, letterSpacing: '0px', duration: 0.4, ease: "power4.out" },
-                "-=0.2"
+            // Fermeture Loot
+            card.onclick = () => {
+                gsap.to(card, { 
+                    scale: 0.5, opacity: 0, y: -200, duration: 0.5, 
+                    onComplete: () => {
+                        card.remove();
+                        gsap.to(lid, { y: 0, rotation: 0, duration: 0.3 });
+                        lootIndex++;
+                        isAnimating = false;
+                        
+                        // Si c'était le dernier
+                        if(lootIndex >= gifts.length) {
+                            setTimeout(showFinalMessage, 500);
+                        }
+                    }
+                });
+            };
+        }
+
+        // 4. MESSAGE FINAL & RÉSUMÉ
+        function showFinalMessage() {
+            gsap.to(giftBox, { scale: 0, duration: 0.5 });
+            
+            // Populate Summary List
+            summaryList.innerHTML = '';
+            gifts.forEach(g => {
+                summaryList.innerHTML += `
+                    <div class="summary-item">
+                        <span class="summary-check">✅</span>
+                        <span>${g.emoji} ${g.title}</span>
+                    </div>
+                `;
+            });
+            // Ajout du "Et plus encore..."
+            summaryList.innerHTML += `
+                <div class="summary-item" style="opacity:0.8; font-style:italic; margin-top:10px;">
+                    <span class="summary-check">➕</span>
+                    <span>Et plus encore...</span>
+                </div>
+            `;
+
+            const finalMsg = document.getElementById('finalMsg');
+            const summaryBox = document.getElementById('giftSummary');
+            
+            finalMsg.style.display = 'flex';
+            
+            // Animate Main Text
+            gsap.fromTo(finalMsg, 
+                { opacity: 0, y: 50 }, 
+                { opacity: 1, y: 0, duration: 1.5, delay: 0.5 }
             );
 
-            // IMPACT 1: Adorable (Comes from left with shake)
-            tl.fromTo(att1,
-                { x: -100, opacity: 0, scale: 2 },
-                { x: 0, opacity: 1, scale: 1, duration: 0.3, ease: "power4.out" }
-            );
-            // Camera shake simulation
-            tl.to("body", { x: -5, duration: 0.05, yoyo: true, repeat: 3 });
-
-            // IMPACT 2: Mignonne (Comes from right with shake)
-            tl.fromTo(att2,
-                { x: 100, opacity: 0, scale: 2 },
-                { x: 0, opacity: 1, scale: 1, duration: 0.3, ease: "power4.out" }
-            );
-            tl.to("body", { x: 5, duration: 0.05, yoyo: true, repeat: 3 });
-
-            // CUBE & INDICE REVEAL
-            tl.to([cube, indice, closeBtn], {
+            // Animate Summary Box
+            gsap.to(summaryBox, {
                 opacity: 1,
                 y: 0,
                 duration: 1,
-                stagger: 0.2,
+                delay: 2, /* Appear after main text */
                 ease: "power2.out"
-            }, "+=0.5");
-        }
-
-        function closeDomain() {
-            gsap.to(domain, {
-                clipPath: "circle(0% at 50% 50%)",
-                duration: 0.8,
-                ease: "power4.in"
             });
             
-            // Reset elements
-            gsap.set([hand, title, att1, att2, cube, indice, closeBtn], { opacity: 0 });
+            createConfetti();
         }
 
-        // Init positions
-        gsap.set([hand, title, att1, att2, cube, indice, closeBtn], { opacity: 0 });
-        gsap.set(cube, { y: 50 });
-        gsap.set(indice, { y: 50 });
+        // --- ENGINE NEIGE ---
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let snowflakes = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        class Snowflake {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height - height;
+                this.size = Math.random() * 3 + 1;
+                this.speed = Math.random() * 2 + 1;
+                this.opacity = Math.random() * 0.5 + 0.3;
+                this.sway = Math.random() * 0.02; 
+                this.angle = Math.random() * Math.PI * 2;
+            }
+            update() {
+                this.y += this.speed;
+                this.angle += this.sway;
+                this.x += Math.sin(this.angle) * 0.5;
+
+                if (this.y > height) {
+                    this.y = -10;
+                    this.x = Math.random() * width;
+                }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initSnow() {
+            snowflakes = [];
+            for (let i = 0; i < 100; i++) snowflakes.push(new Snowflake());
+        }
+
+        function animateSnow() {
+            ctx.clearRect(0, 0, width, height);
+            snowflakes.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateSnow);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        function createConfetti() {
+            for(let i=0; i<50; i++) {
+                const conf = document.createElement('div');
+                conf.innerText = ['✨', '❄️', '❤️', '🎁'][Math.floor(Math.random()*4)];
+                conf.style.position = 'absolute';
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.top = '-50px';
+                conf.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                conf.style.transition = `top ${Math.random()*2+2}s linear, transform ${Math.random()*2+2}s linear`;
+                sceneView.appendChild(conf);
+                
+                setTimeout(() => {
+                    conf.style.top = '110vh';
+                    conf.style.transform = `rotate(${Math.random()*360}deg)`;
+                }, 100);
+            }
+        }
 
     </script>
 </body>
